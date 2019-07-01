@@ -17,11 +17,7 @@ class Oystercard
     @balance += amount
   end
 
-  def deduct(amount)
-    raise 'error: insufficient funds' if enough?(amount)
 
-    @balance -= amount
-  end
 
   def touch_in
     raise 'error: Already in journey' if in_journey?
@@ -32,8 +28,9 @@ class Oystercard
 
   def touch_out
     raise 'error: Not in journey' unless in_journey?
-
     @in_journey = false
+    deduct(MININMUM_TOUCH_IN)
+
   end
 
   def in_journey?
@@ -41,6 +38,12 @@ class Oystercard
   end
 
   private
+
+  def deduct(amount)
+    raise 'error: insufficient funds' if enough?(amount)
+
+    @balance -= amount
+  end
 
   def max?(amount)
     @balance + amount > DEFAULT_MAXIMUM
