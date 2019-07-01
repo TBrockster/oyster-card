@@ -38,16 +38,22 @@ describe Oystercard do
   end
   describe '#touch_in' do
     it 'causes in_journey? to return true' do
+      subject.top_up(Oystercard::DEFAULT_MAXIMUM)
       subject.touch_in
       expect(subject.in_journey?).to eq true
     end
     it 'raises error if already in journey' do
+      subject.top_up(Oystercard::DEFAULT_MAXIMUM)
       subject.touch_in
       expect { subject.touch_in }.to raise_error 'error: Already in journey'
+    end
+    it 'raises error if balance is under minimum' do
+      expect { subject.touch_in }.to raise_error 'error: insufficient funds'
     end
   end
   describe '#touch_out' do
     it 'causes in_journey? to return false' do
+      subject.top_up(Oystercard::DEFAULT_MAXIMUM)
       subject.touch_in
       subject.touch_out
       expect(subject.in_journey?).to eq false

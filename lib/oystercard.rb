@@ -4,6 +4,7 @@
 class Oystercard
   attr_reader :balance
   DEFAULT_MAXIMUM = 90
+  MININMUM_TOUCH_IN = 1
 
   def initialize
     @balance = 0
@@ -24,6 +25,7 @@ class Oystercard
 
   def touch_in
     raise 'error: Already in journey' if in_journey?
+    raise 'error: insufficient funds' if min?
 
     @in_journey = true
   end
@@ -46,5 +48,9 @@ class Oystercard
 
   def enough?(amount)
     amount > @balance
+  end
+
+  def min?
+    @balance < MININMUM_TOUCH_IN
   end
 end
