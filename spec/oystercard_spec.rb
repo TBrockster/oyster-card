@@ -6,8 +6,9 @@ describe Oystercard do
   max_balance = Oystercard::DEFAULT_MAXIMUM
   min_balance = Oystercard::MININMUM_TOUCH_IN
   let (:station) { double :fake_station}
-  let (:entry_station) { double :fake_station }
-  let (:exit_station) { double :fake_station }
+  let (:entry_station) { double :fake_station, touch_in: entry_station }
+  let (:exit_station) { double :fake_station, touch_out: exit_station }
+  let (:journey) { double :fake_journey, entry_station: entry_station, exit_station: exit_station }
   describe '#journeys' do
     it { is_expected.to respond_to(:journeys) }
     it 'new cards have empty journeys' do
@@ -18,7 +19,9 @@ describe Oystercard do
       test = { Entry: :entry_station, Exit: :exit_station } 
       subject.touch_in(:entry_station)
       subject.touch_out(:exit_station)
-      expect(subject.journeys[0]).to eq test
+      expect(subject.journeys[0].entry_station).to eq :entry_station
+      expect(subject.journeys[0].exit_station).to eq :exit_station
+      subject.journeys[0] { should be_instance_of(Journey) }
     end
   end
   describe '#balance' do
@@ -59,11 +62,11 @@ describe Oystercard do
     #   subject.touch_in(station)
     #   expect(subject.in_journey?).to eq true
     # end
-    it 'raises error if already in journey' do
-      subject.top_up(max_balance)
-      subject.touch_in(station)
-      expect { subject.touch_in(station) }.to raise_error 'error: Already in journey'
-    end
+    # it 'raises error if already in journey' do
+    #   subject.top_up(max_balance)
+    #   subject.touch_in(station)
+    #   expect { subject.touch_in(station) }.to raise_error 'error: Already in journey'
+    # end
     it 'raises error if balance is under minimum' do
       expect { subject.touch_in(station) }.to raise_error 'error: insufficient funds'
     end
@@ -72,8 +75,11 @@ describe Oystercard do
     #   subject.touch_in(station)
     #   expect(subject.journeys[0][:Entry]).to eq station
     # end
-
-
+    # it 'charges fee if journey is in progress' do
+    #   subject.top_up(max_balance)
+    #   subject.touch_in(entry_station)
+    #   expect { subject.touch_in(entry_station)}.to change { subject.balance }.from(90).to(84)
+    # end
   end
   describe '#touch_out' do
     # it 'causes in_journey? to return false' do
@@ -82,11 +88,11 @@ describe Oystercard do
     #   subject.touch_out
     #   expect(subject.in_journey?).to eq false
     # end
-    it 'raises error if not in journey' do
-      expect { subject.touch_out(station) }.to raise_error 'error: Not in journey'
-    end
+    # it 'raises error if not in journey' do
+    #   expect { subject.touch_out(station) }.to raise_error 'error: Not in journey'
+    # end
     it 'deducts fare price when you tap out' do
-      subject.top_up(min_balance)
+      subject.top_up(max_balance)
       subject.touch_in(station)
       expect {subject.touch_out(station)}.to change{subject.balance}.by(-1)
 
