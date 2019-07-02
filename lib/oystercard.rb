@@ -22,14 +22,14 @@ class Oystercard
     raise 'error: Already in journey' if in_journey?
     raise 'error: insufficient funds' if min?
 
-    @in_journey = true
+    # @in_journey = true
     @entry_station = entry_station
   end
 
   def touch_out
     raise 'error: Not in journey' unless in_journey?
 
-    @in_journey = false
+    # @in_journey = false
     deduct(MININMUM_TOUCH_IN)
     @entry_station = nil
   end
