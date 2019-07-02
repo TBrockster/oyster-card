@@ -10,7 +10,8 @@ class Oystercard
 
   def initialize
     @balance = 0
-    @journeys = Hash.new
+    @journeys = []
+    @journey = Hash.new
     # @in_journey = false
   end
 
@@ -25,7 +26,7 @@ class Oystercard
     raise 'error: insufficient funds' if min?
 
     # @in_journey = true
-    @journeys[:Entry] = entry_station
+    @journey[:Entry] = entry_station
     # @entry_station = entry_station
   end
 
@@ -34,14 +35,20 @@ class Oystercard
 
     # @in_journey = false
     deduct(MININMUM_TOUCH_IN)
-    @journeys[:Exit] = exit_station
+    @journey[:Exit] = exit_station
+    end_journey
     # @entry_station = nil
   end
 
   private
 
+  def end_journey
+    @journeys << @journey
+    @journey = Hash.new
+  end
+
   def in_journey?
-    @journeys[:Entry] != nil
+    @journey[:Entry] != nil
   end
 
   def deduct(amount)
