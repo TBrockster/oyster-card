@@ -18,8 +18,6 @@ class Oystercard
     @balance += amount
   end
 
-
-
   def touch_in(entry_station)
     raise 'error: Already in journey' if in_journey?
     raise 'error: insufficient funds' if min?
@@ -30,21 +28,17 @@ class Oystercard
 
   def touch_out
     raise 'error: Not in journey' unless in_journey?
+
     @in_journey = false
     deduct(MININMUM_TOUCH_IN)
     @entry_station = nil
-
-  end
-
-  def in_journey?
-    if @entry_station == nil
-      return false
-    else
-      return true
-    end 
   end
 
   private
+
+  def in_journey?
+    @entry_station != nil
+  end
 
   def deduct(amount)
     raise 'error: insufficient funds' if enough?(amount)

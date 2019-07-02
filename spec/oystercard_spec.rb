@@ -34,16 +34,16 @@ describe Oystercard do
     # end
 
   describe '#in_journey' do
-    it 'new instances start outside of a journey' do
-      expect(subject.in_journey?).to eq false
-    end
+    # it 'new instances start outside of a journey' do
+    #   expect(subject.in_journey?).to eq false
+    # end
   end
   describe '#touch_in' do
-    it 'causes in_journey? to return true' do
-      subject.top_up(max_balance)
-      subject.touch_in(station)
-      expect(subject.in_journey?).to eq true
-    end
+    # it 'causes in_journey? to return true' do
+    #   subject.top_up(max_balance)
+    #   subject.touch_in(station)
+    #   expect(subject.in_journey?).to eq true
+    # end
     it 'raises error if already in journey' do
       subject.top_up(max_balance)
       subject.touch_in(station)
@@ -61,12 +61,12 @@ describe Oystercard do
 
   end
   describe '#touch_out' do
-    it 'causes in_journey? to return false' do
-      subject.top_up(max_balance)
-      subject.touch_in(station)
-      subject.touch_out
-      expect(subject.in_journey?).to eq false
-    end
+    # it 'causes in_journey? to return false' do
+    #   subject.top_up(max_balance)
+    #   subject.touch_in(station)
+    #   subject.touch_out
+    #   expect(subject.in_journey?).to eq false
+    # end
     it 'raises error if not in journey' do
       expect { subject.touch_out }.to raise_error 'error: Not in journey'
     end
