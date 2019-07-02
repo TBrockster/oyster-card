@@ -6,6 +6,19 @@ describe Oystercard do
   max_balance = Oystercard::DEFAULT_MAXIMUM
   min_balance = Oystercard::MININMUM_TOUCH_IN
   let (:station) { double :fake_station}
+  describe '#journeys' do
+    it { is_expected.to respond_to(:journeys) }
+    it 'new cards have empty journeys' do
+      expect(subject.journeys).to eq Hash.new
+    end
+    it 'stores a journey' do
+      subject.top_up(max_balance)
+      test = { Entry: :station, Exit: :station } 
+      subject.touch_in(:station)
+      subject.touch_out(:station)
+      expect(subject.journeys).to eq test
+    end
+  end
   describe '#balance' do
     it { is_expected.to respond_to(:balance) }
     it 'new instances initialize with a balance of 0' do
@@ -55,7 +68,7 @@ describe Oystercard do
     it 'stores the entry station' do
       subject.top_up(max_balance)
       subject.touch_in(station)
-      expect(subject.entry_station).to eq station
+      expect(subject.journeys[:Entry]).to eq station
     end
 
 
@@ -68,20 +81,20 @@ describe Oystercard do
     #   expect(subject.in_journey?).to eq false
     # end
     it 'raises error if not in journey' do
-      expect { subject.touch_out }.to raise_error 'error: Not in journey'
+      expect { subject.touch_out(station) }.to raise_error 'error: Not in journey'
     end
     it 'deducts fare price when you tap out' do
       subject.top_up(min_balance)
       subject.touch_in(station)
-      expect {subject.touch_out}.to change{subject.balance}.by(-1)
+      expect {subject.touch_out(station)}.to change{subject.balance}.by(-1)
 
     end
-    it 'forgets entry station when tapping out' do
-      subject.top_up(min_balance)
-      subject.touch_in(station)
-      subject.touch_out
-      expect(subject.entry_station).to eq nil
-    end
+    # it 'forgets entry station when tapping out' do
+    #   subject.top_up(min_balance)
+    #   subject.touch_in(station)
+    #   subject.touch_out(station)
+    #   expect(subject.entry_station).to eq nil
+    # end
 
 
   end

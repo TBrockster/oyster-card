@@ -3,12 +3,14 @@
 # this class simulates oystercards
 class Oystercard
   attr_reader :balance
-  attr_reader :entry_station
+  # attr_reader :entry_station
+  attr_reader :journeys
   DEFAULT_MAXIMUM = 90
   MININMUM_TOUCH_IN = 1
 
   def initialize
     @balance = 0
+    @journeys = Hash.new
     # @in_journey = false
   end
 
@@ -23,21 +25,23 @@ class Oystercard
     raise 'error: insufficient funds' if min?
 
     # @in_journey = true
-    @entry_station = entry_station
+    @journeys[:Entry] = entry_station
+    # @entry_station = entry_station
   end
 
-  def touch_out
+  def touch_out(exit_station)
     raise 'error: Not in journey' unless in_journey?
 
     # @in_journey = false
     deduct(MININMUM_TOUCH_IN)
-    @entry_station = nil
+    @journeys[:Exit] = exit_station
+    # @entry_station = nil
   end
 
   private
 
   def in_journey?
-    @entry_station != nil
+    @journeys[:Entry] != nil
   end
 
   def deduct(amount)
