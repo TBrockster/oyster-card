@@ -6,14 +6,14 @@ require_relative 'station'
 # this class simulates oystercards
 class Oystercard
   attr_reader :balance
-  attr_accessor :journeys
+  attr_reader :journeys
   DEFAULT_MAXIMUM = 90
-  MININMUM_TOUCH_IN = 1
+  MININMUM_TOUCH_IN = Journey::REGULAR_FARE
 
-  def initialize(journey = Journey.new)
+  def initialize
     @balance = 0
     @journeys = []
-    @journey = journey
+    @journey = Journey.new
   end
 
   def top_up(amount)
