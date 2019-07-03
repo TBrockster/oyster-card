@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'Oystercard'
 
 describe Oystercard do
@@ -10,24 +8,25 @@ describe Oystercard do
   let (:exit_station) { double :fake_station, touch_out: exit_station }
   let (:journey) { double :fake_journey, entry_station: entry_station, exit_station: exit_station }
   describe '#journeys' do
-    it { is_expected.to respond_to(:journeys) }
     it 'new cards have empty journeys' do
       expect(subject.journeys).to be_empty
     end
-    it 'stores a journey' do
+    it 'stores a journey object' do
       subject.top_up(max_balance)
-      test = { Entry: :entry_station, Exit: :exit_station } 
       subject.touch_in(:entry_station)
       subject.touch_out(:exit_station)
-      expect(subject.journeys[0].entry_station).to eq :entry_station
-      expect(subject.journeys[0].exit_station).to eq :exit_station
-      subject.journeys[0] { should be_instance_of(Journey) }
+      subject.journeys[0] { should be_a(Journey) }
     end
   end
   describe '#balance' do
     it { is_expected.to respond_to(:balance) }
     it 'new instances initialize with a balance of 0' do
       expect(subject.balance).to eq 0
+    end
+    it 'returns balance' do
+      top_up_amount = rand(90)
+      subject.top_up(top_up_amount)
+      expect(subject.balance).to eq top_up_amount
     end
   end
   describe '#top_up' do
@@ -40,70 +39,33 @@ describe Oystercard do
       expect { subject.top_up(2) }.to raise_error "error: top-up exceeds maximum (#{Oystercard::DEFAULT_MAXIMUM})"
     end
   end
-#  describe '#deduct' do
-    # it { is_expected.to respond_to(:deduct).with(1).argument }
-    # it 'deducts 10 from our balance' do
-    #   subject.top_up(20)
-    #   expect { subject.deduct(10) }.to change { subject.balance }.by(-10)
-    # end
-    # it 'raises exception when deduct exceeds balance' do
-    #   subject.top_up(20)
-    #   expect { subject.deduct(30) }.to raise_error 'error: insufficient funds'
-    # end
-
-  describe '#in_journey' do
-    # it 'new instances start outside of a journey' do
-    #   expect(subject.in_journey?).to eq false
-    # end
-  end
   describe '#touch_in' do
-    # it 'causes in_journey? to return true' do
-    #   subject.top_up(max_balance)
-    #   subject.touch_in(station)
-    #   expect(subject.in_journey?).to eq true
-    # end
-    # it 'raises error if already in journey' do
-    #   subject.top_up(max_balance)
-    #   subject.touch_in(station)
-    #   expect { subject.touch_in(station) }.to raise_error 'error: Already in journey'
-    # end
     it 'raises error if balance is under minimum' do
       expect { subject.touch_in(station) }.to raise_error 'error: insufficient funds'
     end
-    # it 'stores the entry station' do
-    #   subject.top_up(max_balance)
-    #   subject.touch_in(station)
-    #   expect(subject.journeys[0][:Entry]).to eq station
-    # end
-    # it 'charges fee if journey is in progress' do
-    #   subject.top_up(max_balance)
-    #   subject.touch_in(entry_station)
-    #   expect { subject.touch_in(entry_station)}.to change { subject.balance }.from(90).to(84)
-    # end
-  end
-  describe '#touch_out' do
-    # it 'causes in_journey? to return false' do
-    #   subject.top_up(max_balance)
-    #   subject.touch_in(station)
-    #   subject.touch_out
-    #   expect(subject.in_journey?).to eq false
-    # end
-    # it 'raises error if not in journey' do
-    #   expect { subject.touch_out(station) }.to raise_error 'error: Not in journey'
-    # end
-    it 'deducts fare price when you tap out' do
+    it 'subtracts penalty if last journey was not complete' do
       subject.top_up(max_balance)
       subject.touch_in(station)
-      expect {subject.touch_out(station)}.to change{subject.balance}.by(-1)
-
+      expect { subject.touch_in(station) }.to change { subject.balance }.by(-6)
     end
-    # it 'forgets entry station when tapping out' do
-    #   subject.top_up(min_balance)
-    #   subject.touch_in(station)
-    #   subject.touch_out(station)
-    #   expect(subject.entry_station).to eq nil
-    # end
-
-
+    it 'does not charge penalty fee for first touch in' do
+      subject.top_up(max_balance)
+      expect { subject.touch_in(station) }.to change { subject.balance }.by(0)
+    end
+  end
+  describe '#touch_out' do
+    it 'deducts fare price when you touch out' do
+      subject.top_up(max_balance)
+      subject.touch_in(station)
+      expect { subject.touch_out(station) }.to change{ subject.balance }.by(-1)
+    end
+    it 'deducts fee price when touching out, without touching in first' do
+      subject.top_up(max_balance)
+      expect {subject.touch_out(station) }. to change{ subject.balance }.by(-6)
+    end
+    it 'raises error if touching out, and unable to pay fee' do
+      subject.top_up(min_balance)
+      expect { subject.touch_out(station) }.to raise_error 'error: insufficient funds to pay fee'
+    end
   end
 end

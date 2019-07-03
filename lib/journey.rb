@@ -11,6 +11,10 @@ class Journey
     @exit_station = nil
   end
 
+  def begun?
+    !@entry_station.nil?
+  end
+
   def complete?
     !@entry_station.nil? && !@exit_station.nil?
   end
