@@ -2,18 +2,18 @@
 
 require_relative 'journey'
 require_relative 'station'
+require_relative 'journey_log'
 
 # this class simulates oystercards
 class Oystercard
   attr_reader :balance
-  attr_reader :journeys
   DEFAULT_MAXIMUM = 90
   MININMUM_TOUCH_IN = Journey::REGULAR_FARE
+  PENALTY_FARE = Journey::PENALTY_FARE
 
   def initialize
     @balance = 0
-    @journeys = []
-    @journey = Journey.new
+    @journey_log = JourneyLog.new
   end
 
   def top_up(amount)
@@ -25,23 +25,25 @@ class Oystercard
   def touch_in(entry_station)
     raise 'error: insufficient funds' if min?
 
-    deduct(@journey.fare) if @journey.begun?
-    @journey = Journey.new(entry_station: entry_station)
+    deduct(PENALTY_FARE) if @journey_log.current_journey.begun?
+    @journey_log.start(entry_station)
   end
 
   def touch_out(exit_station)
-    raise 'error: insufficient funds to pay fee' if !@journey.begun? && balance < Journey::PENALTY_FARE
+    raise 'error: insufficient funds to pay fee' if fee_too_high?
 
-    @journey.finish(exit_station)
-    deduct(@journey.fare)
-    end_journey
+    @journey_log.finish(exit_station)
+    deduct(@journey_log.history[-1].fare)
+  end
+
+  def print_history
+    @journey_log.history
   end
 
   private
 
-  def end_journey
-    @journeys << @journey
-    @journey = Journey.new
+  def fee_too_high?
+    !@journey_log.current_journey.begun? && balance < PENALTY_FARE
   end
 
   def deduct(amount)
