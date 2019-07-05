@@ -6,7 +6,6 @@ class JourneyLog
   def initialize(journey_class: Journey.new)
     @current_journey = journey_class
     @history = []
-    # @current_journey = Journey.new
   end
 
   def start(entry_station)

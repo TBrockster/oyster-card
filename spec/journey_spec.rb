@@ -26,7 +26,7 @@ describe Journey do
     end
 
     context 'given an exit station' do
-      let(:other_station) { double :other_station }
+      let(:other_station) { double :other_station, zone: 1 }
 
       before do
         subject.finish(other_station)
@@ -40,5 +40,16 @@ describe Journey do
         expect(subject).to be_complete
       end
     end
+  end
+  let(:holborn) { double :Station, name: 'holborn', zone: 1 }
+  let(:liverpool) { double :Station, name: 'liverpool', zone: 1 }
+  let(:amersham) { double :Station, name: 'Amersham', zone: 9 }
+  it 'calculates fares correctly' do
+    journey1 = Journey.new(entry_station: holborn, exit_station: liverpool)
+    expect(journey1.fare). to eq 1
+    journey2 = Journey.new(entry_station: holborn, exit_station: amersham)
+    expect(journey2.fare). to eq 9
+    journey3 = Journey.new(entry_station: amersham, exit_station: holborn)
+    expect(journey3.fare). to eq 9
   end
 end

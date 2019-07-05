@@ -3,7 +3,7 @@ require 'Oystercard'
 describe Oystercard do
   max_balance = Oystercard::DEFAULT_MAXIMUM
   min_balance = Oystercard::MININMUM_TOUCH_IN
-  let (:station) { double :fake_station}
+  let (:station) { double :fake_station, zone: 1}
   let (:entry_station) { double :fake_station, touch_in: entry_station }
   let (:exit_station) { double :fake_station, touch_out: exit_station }
   let (:journey) { double :fake_journey, entry_station: entry_station, exit_station: exit_station }
@@ -68,4 +68,14 @@ describe Oystercard do
       expect { subject.touch_out(station) }.to raise_error 'error: insufficient funds to pay fee'
     end
   end
+  # describe 'feature test' do
+  #   it 'charges 1 for intrazone journey' do
+  #     subject.top_up(max_balance)
+  #     station1 = Station.new('Holborn', 1)
+  #     station2 = Station.new('Liverpool St', 1)
+  #     subject.touch_in(station1)
+  #     subject.touch_out(station2)
+  #     expect(subject.balance).to eq 89
+  #   end
+  # end
 end

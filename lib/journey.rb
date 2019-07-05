@@ -20,11 +20,17 @@ class Journey
   end
 
   def fare
-    complete? ? REGULAR_FARE : PENALTY_FARE
+    complete? ? zone_calculator : PENALTY_FARE
   end
-
+    
   def finish(station)
     @exit_station = station
     self
+  end
+
+  private
+
+  def zone_calculator
+    (@entry_station.zone - @exit_station.zone).abs + 1
   end
 end
