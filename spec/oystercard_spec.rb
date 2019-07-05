@@ -15,7 +15,7 @@ describe Oystercard do
     #   subject.top_up(max_balance)
     #   subject.touch_in(:entry_station)
     #   subject.touch_out(:exit_station)
-    #   subject.journeys[0] { should be_a(Journey) }
+    # subject.journeys[0] { should be_a(Journey) }
     # end
   end
   describe '#balance' do

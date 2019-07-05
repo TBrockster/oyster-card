@@ -25,6 +25,9 @@
         null
       ],
       "/Users/student/Documents/projects/oystercard/lib/journey_log.rb": [
+        null,
+        null,
+        null,
         1,
         1,
         1,
@@ -40,14 +43,14 @@
         null,
         1,
         2,
-        2,
+        null,
         null,
         null,
         1,
         3,
         null,
         null,
-        1,
+        null,
         null,
         null,
         null,
@@ -110,8 +113,8 @@
         1,
         1,
         1,
-        26,
-        26,
+        24,
+        24,
         null,
         null,
         1,
@@ -297,6 +300,6 @@
         null
       ]
     },
-    "timestamp": 1562167681
+    "timestamp": 1562336817
   }
 }
